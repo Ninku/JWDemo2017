@@ -4,14 +4,10 @@ using UnityEngine;
 
 public class DragShape : MonoBehaviour {
 
-	private Vector3 startPos;
 	private bool isCorrectArea = false;
 	private GameObject correctBucket;
 	private bool isLocked = false;
 
-	void Start(){
-		startPos = transform.position;
-	}
 
 	void OnMouseDrag(){
 		if(!isLocked){
@@ -23,9 +19,12 @@ public class DragShape : MonoBehaviour {
 	void OnMouseUp(){
 		//if ye then do win
 		if(isCorrectArea){
-			isLocked = true;
-		}else{//else move back to start pos
-			transform.position = startPos;
+			//add points
+			Destroy(gameObject);
+		}else{
+			
+			Rigidbody2D r = transform.GetComponent<Rigidbody2D>();
+			r.velocity = Vector3.zero;
 		}
 	}
 

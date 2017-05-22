@@ -17,6 +17,7 @@ public class CrosswordController : MonoBehaviour {
 	private List<GameObject>  cellList;
 	private KeyCode[] alphas;
 	private string keyPressed;
+	public bool assumeAcrossDirection = true;
 	 
 	void Start () {
 
@@ -33,11 +34,18 @@ public class CrosswordController : MonoBehaviour {
 	void Update(){
 		//if a key is pressed down (not held)
 		if(AlphaInput()){
+			//loop through the cell list
 			for(int i = 0; i < cellList.Count; i++){
+				//if this cell has focus and is not yet correct
 				CellButton c = cellList[i].GetComponent<CellButton>();
 				if(c.hasFocus && !c.isCorrect){
+					//enter the input character into the cell
 					Text t = cellList[i].GetComponentInChildren<Text>();
 					t.text = keyPressed.ToString();
+
+					//if columns and rows are accessible here, run FocusNextCell and pass c,r
+					CheckNextCell(c);
+
 					return;
 				}
 			}
@@ -152,10 +160,13 @@ public class CrosswordController : MonoBehaviour {
 		cell.name = cellName; 
 		cell.tag = "CellButton";
 
+
 		//specifying correct answer
 		CellButton cb = cell.GetComponent<CellButton>();
 		char z = answerKey[column,row];
 		cb.correctChar = z;
+		cb.column = column;
+		cb.row = row;
 
 		//resizing and placing
 		cell.transform.localScale = new Vector3(1f,1f,1f);
@@ -172,6 +183,52 @@ public class CrosswordController : MonoBehaviour {
 				c.hasFocus = false;
 			}
 		}
+	}
+
+	void CheckNextCell(CellButton c){
+		CellButton newCell = c;
+		int column = c.column;
+		int row = c.row;
+		//if there is a cell available to the right... --cannot be isCorrect and cannot be a null cell
+		if(column +1 < cellColMax && assumeAcrossDirection == true){
+			if(answerKey[column+1,row] != '\0'){
+				//identify the next cell in the same row (+1 to column)
+				string tempCell = "CellC" + (column +1 +1) + "R" + (row+1);
+				newCell = GameObject.Find(tempCell).GetComponent<CellButton>();
+
+				//if the next cell is already correct, do not change focus
+				if(newCell.IsCorrect()){return;}
+				//change focus and exit
+				FocusNextCell(newCell);
+				return;
+			}
+		}
+		if(row +1 < cellRowMax){
+			//next across cell was not available so checking the cell below
+			if(answerKey[column,row+1] != '\0'){
+
+				//set flag to continue downwards
+				assumeAcrossDirection = false;
+
+				//identify the next cell in the same column (+1 to row)
+				string tempCell = "CellC" + (column +1) + "R" + (row+1 +1);
+				newCell = GameObject.Find(tempCell).GetComponent<CellButton>();
+
+				//if the next cell is already correct, do not change focus
+				if(newCell.IsCorrect()){
+					assumeAcrossDirection = true;
+					return;
+				}
+				//change focus
+				FocusNextCell(newCell);
+				return;
+			}
+		}
+		assumeAcrossDirection = true;
+	}
+		
+	void FocusNextCell(CellButton c){
+		c.GetFocus();
 	}
 
 

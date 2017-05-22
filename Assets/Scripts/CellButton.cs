@@ -8,6 +8,9 @@ public class CellButton : MonoBehaviour {
 	public bool hasFocus = false;
 	public bool isCorrect = false;
 	public char correctChar;
+	public int column;
+	public int row;
+
 
 	private CrosswordController cc;
 	private Color basicColor;
@@ -47,12 +50,16 @@ public class CellButton : MonoBehaviour {
 		hasFocus = false;
 	}
 
-	public void OnClick(){
+	public void GetFocus(){
 		if(!hasFocus){
 			cc.ChangeCellFocus();
 			hasFocus = true;
 		}
 
+	}
+
+	public bool IsCorrect(){
+		return isCorrect;
 	}
 
 

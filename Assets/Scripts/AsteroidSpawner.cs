@@ -29,14 +29,14 @@ public class AsteroidSpawner : MonoBehaviour {
 
 	void Update () {
 		float chance = Random.Range(0f, 100f);
-		if(chance > 99f){
+		if(chance > 99.5f){
 			SpawnAsteroid();
 		}
 	}
 
 	void SpawnAsteroid(){
 		float rX = Random.Range(-5.0f,5.0f);
-		int ranAst = Random.Range(0,2);
+		int ranAst = Random.Range(0,3);
 		Vector3 spawnPoint;
 
 		if(isSideSpawner){
